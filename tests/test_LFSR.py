@@ -10,6 +10,7 @@ import logging
 import cocotb_test.simulator
 import pytest
 import numpy as np
+import py3gpp
 
 import importlib.util
 
@@ -56,16 +57,15 @@ class TB(object):
 async def simple_test(dut):
     tb = TB(dut)
     await tb.cycle_reset()
-    output = []
-    output_model = []
-    output_cos = []
-    output_model_cos = []
     count = 0
-    num_items = 100
+    model = py3gpp.nrPSS(0)
+    num_items = len(model)
+    received = np.empty(num_items, int)
     while count < num_items:
         await RisingEdge(dut.clk_i)
-
-        print(f"{int(tb.dut.data_o)}")
+        received[count] = int(tb.dut.data_o)
+        print(f"{received[count]} <-> {model[count]}")
+        assert model[count] == received[count]
         count += 1
 # cocotb-test
 
@@ -111,6 +111,9 @@ def test(N, START_VALUE, TAPS):
 
 if __name__ == '__main__':
     os.environ['PLOTS'] = "1"
-    test(N = 8, START_VALUE = 48, TAPS = 18)
+    START_VALUE = np.array([1, 1, 1, 0, 1, 1, 0])
+    ncellid = 0
+    START_VALUE = np.roll(START_VALUE, -43 * ncellid)
+    test(N = 7, START_VALUE = int(''.join(map(str, START_VALUE)), 2), TAPS = 0x11)
 
     

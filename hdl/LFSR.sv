@@ -13,7 +13,7 @@ module LFSR
 );
 
 reg [N - 1 : 0] shift_reg;
-reg             reg0;
+reg             newBit;
 
 always @(posedge clk_i) begin
     if (!reset_ni) begin
@@ -21,13 +21,15 @@ always @(posedge clk_i) begin
         for (integer i = 0; i < N; i++) begin
             shift_reg[i] <= (START_VALUE >> i) & 1'b1;
         end
+        // $display("%x", shift_reg);
     end else begin
-        data_o <= shift_reg[N - 1];
-        reg0 = 0;
+        data_o <= shift_reg[0];
+        newBit = 0;
         for (integer i = 0; i < N; i++) begin
-            reg0 = reg0 + shift_reg[i] & ((TAPS >> i) & 1'b1);
+            newBit = newBit + (shift_reg[i] & ((TAPS >> i) & 1'b1));
         end
-        shift_reg <= {shift_reg[N - 2 : 0], reg0};
+        // [R_(N-1) .... R_0] -> [newBit R_(N-1) .... R_1]
+        shift_reg <= {newBit, shift_reg[N - 1 : 1]};
     end
 end
 
