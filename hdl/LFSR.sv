@@ -13,7 +13,8 @@ module LFSR
     input                       load_config_i,
     input   wire [N - 1 : 0]    taps_i,
     input   wire [N - 1 : 0]    start_value_i,
-    output  reg                 data_o
+    output  reg                 data_o,
+    output  reg                 valid_o
 );
 
 reg [N - 1 : 0] shift_reg;
@@ -25,6 +26,7 @@ reg [N - 1 : 0] taps;
 always @(posedge clk_i) begin
     if (!reset_ni) begin
         data_o <= '0;
+        valid_o <= '0;
         if (VARIABLE_CONFIG) begin
             shift_reg <= '0;
         end else begin    
@@ -35,6 +37,7 @@ always @(posedge clk_i) begin
         // $display("%x", shift_reg);
     end else begin
         data_o <= shift_reg[0];
+        valid_o <= 1;
         if (VARIABLE_CONFIG) begin
             if (load_config_i) begin
                 taps = taps_i;
