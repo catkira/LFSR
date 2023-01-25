@@ -29,20 +29,8 @@ class TB(object):
         self.log.setLevel(logging.DEBUG)        
 
         tests_dir = os.path.abspath(os.path.dirname(__file__))
-        # model_dir = os.path.abspath(os.path.join(tests_dir, '../model/LFSR.py'))
-        # spec = importlib.util.spec_from_file_location("lfsr_mode", model_dir)
-        # foo = importlib.util.module_from_spec(spec)
-        # spec.loader.exec_module(foo)
-        # self.model = foo.Model(self.LEN, self.START_VALUE, self.TAPS) 
         cocotb.fork(Clock(self.dut.clk_i, CLK_PERIOD_NS, units='ns').start())
-        # cocotb.fork(self.model_clk(CLK_PERIOD_NS, 'ns'))    
           
-    async def model_clk(self, period, period_units):
-        timer = Timer(period, period_units)
-        while True:
-            #self.model.tick()
-            await timer
-
     async def cycle_reset(self):
         self.dut.reset_ni.value = 0
         await RisingEdge(self.dut.clk_i)
@@ -130,7 +118,6 @@ def test_parameter(N, START_VALUE, TAPS):
     ]    
 
     parameters = {}
-
     parameters['N'] = N
     parameters['START_VALUE'] = START_VALUE
     parameters['TAPS'] = TAPS
@@ -162,7 +149,6 @@ def test_variable_config(N, VARIABLE_CONFIG):
     ]    
 
     parameters = {}
-
     parameters['N'] = N
     parameters['VARIABLE_CONFIG'] = VARIABLE_CONFIG
 
