@@ -1,0 +1,31 @@
+name: CI
+
+on: 
+  push:
+    paths-ignore:
+      - '**/README.md'
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Set up Python "3.10"
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        pip3 install -r requirements.txt
+        #pip3 uninstall cocotb
+        git clone https://github.com/catkira/cocotb.git
+        cd cocotb
+        pip3 install -e .
+        sudo apt install -y --no-install-recommends iverilog
+    - name: Verify with cocotb & icarus
+      run: |
+        pytest -v --workers 10 tests/*.py
