@@ -42,7 +42,7 @@ always @(posedge clk_i) begin
                 valid_o <= '0;
                 taps <= taps_i;
                 shift_reg <= start_value_i;
-                $display("taps = %d  shift_reg = %d\n\n\n", taps, shift_reg);
+                $display("taps = %d  shift_reg = %d\n\n\n", taps_i, start_value_i);
             end else begin
                 valid_o <= 1;
                 newBit = 0;

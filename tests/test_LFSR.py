@@ -84,6 +84,7 @@ async def _test_variable_config(dut):
     dut.taps_i.value = 0x11
     await RisingEdge(dut.clk_i)
     dut.load_config_i.value = 0
+    await RisingEdge(dut.clk_i)
 
     count = 0
     num_items = 127
@@ -92,10 +93,10 @@ async def _test_variable_config(dut):
     received = np.empty(num_items, int)
     while count < num_items:
         await RisingEdge(dut.clk_i)
-        received[count] = int(tb.dut.data_o)
-        # print(f"{received[count]} <-> {model[count]}")
-        assert model[count] == received[count]
-        count += 1        
+        received[count] = int(tb.dut.data_o.value)
+        # print(f"{1-2*received[count]} <-> {model[count]}")
+        assert model[count] == 1-2*received[count]
+        count += 1
 
 
 tests_dir = os.path.abspath(os.path.dirname(__file__))
