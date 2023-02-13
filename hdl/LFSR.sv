@@ -37,19 +37,22 @@ always @(posedge clk_i) begin
         // $display("%x", shift_reg);
     end else begin
         data_o <= shift_reg[0];
-        valid_o <= 1;
         if (VARIABLE_CONFIG) begin
             if (load_config_i) begin
-                taps = taps_i;
-                shift_reg = start_value_i;
+                valid_o <= '0;
+                taps <= taps_i;
+                shift_reg <= start_value_i;
                 $display("taps = %d  shift_reg = %d\n\n\n", taps, shift_reg);
+            end else begin
+                valid_o <= 1;
+                newBit = 0;
+                for (integer i = 0; i < N; i++) begin
+                    newBit = newBit + (shift_reg[i] & taps[i]);
+                end
+                shift_reg <= {newBit, shift_reg[N - 1 : 1]};            
             end
-            newBit = 0;
-            for (integer i = 0; i < N; i++) begin
-                newBit = newBit + (shift_reg[i] & taps[i]);
-            end
-            shift_reg <= {newBit, shift_reg[N - 1 : 1]};            
         end else begin
+            valid_o <= 1;
             newBit = 0;
             for (integer i = 0; i < N; i++) begin
                 newBit = newBit + (shift_reg[i] & ((TAPS >> i) & 1'b1));
