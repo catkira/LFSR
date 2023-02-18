@@ -154,6 +154,9 @@ def test_variable_config(N, VARIABLE_CONFIG):
     parameters['VARIABLE_CONFIG'] = VARIABLE_CONFIG
 
     sim_build="sim_build/" + "_".join(("{}={}".format(*i) for i in parameters.items()))
+    compile_args = []
+    if os.environ.get('SIM') == 'verilator':
+        compile_args = ['-Wno-fatal']
     cocotb_test.simulator.run(
         python_search=[tests_dir],
         verilog_sources=verilog_sources,
@@ -163,6 +166,7 @@ def test_variable_config(N, VARIABLE_CONFIG):
         parameters=parameters,
         sim_build=sim_build,
         testcase="_test_variable_config",
+        compile_args = compile_args
     )
 
 if __name__ == '__main__':
@@ -171,6 +175,7 @@ if __name__ == '__main__':
     START_VALUE = np.array([1, 1, 1, 0, 1, 1, 0]) # bits here are in reversed order!
     ncellid = 0
     START_VALUE = np.roll(START_VALUE, -43 * ncellid)
+    # os.environ['SIM'] = 'verilator'
     test_parameter(N = 7, START_VALUE = int(''.join(map(str, START_VALUE)), 2), TAPS = 0x11)
 
     

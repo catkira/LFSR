@@ -1,11 +1,17 @@
 `timescale 1ns / 1ns
 
+`ifdef VERILATOR  // make parameter readable from VPI
+  `define VL_RD /*verilator public_flat_rd*/
+`else
+  `define VL_RD
+`endif
+
 module LFSR
 #(
-    parameter N = 8,
-    parameter START_VALUE = 8'b00000001,
-    parameter TAPS = 8'b00000011,
-    parameter VARIABLE_CONFIG = 0
+    parameter N `VL_RD = 8,
+    parameter START_VALUE `VL_RD = 8'b00000001,
+    parameter TAPS `VL_RD = 8'b00000011,
+    parameter VARIABLE_CONFIG `VL_RD = 0
 )
 (
     input                       clk_i,
