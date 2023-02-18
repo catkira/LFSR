@@ -1,7 +1,6 @@
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import Timer
-from cocotb.triggers import RisingEdge, ReadOnly
+from cocotb.triggers import RisingEdge
 from collections import deque
 
 import random
@@ -11,8 +10,6 @@ import cocotb_test.simulator
 import pytest
 import numpy as np
 import py3gpp
-
-import importlib.util
 
 CLK_PERIOD_NS = 2
 CLK_PERIOD_S = CLK_PERIOD_NS * 0.000000001
@@ -38,7 +35,6 @@ class TB(object):
         await RisingEdge(self.dut.clk_i)
         self.dut.reset_ni.value = 1
         await RisingEdge(self.dut.clk_i)
-        # self.model.reset()
         
 def _int_to_vector(val, len):
     vec = np.empty(len, int)
