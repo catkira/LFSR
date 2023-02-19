@@ -36,9 +36,7 @@ always @(posedge clk_i) begin
         if (VARIABLE_CONFIG) begin
             shift_reg <= '0;
         end else begin    
-            for (integer i = 0; i < N; i++) begin
-                shift_reg[i] <= (START_VALUE >> i) & 1'b1;
-            end
+            shift_reg <= START_VALUE;
         end
         // $display("%x", shift_reg);
     end else begin

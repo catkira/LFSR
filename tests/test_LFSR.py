@@ -25,8 +25,7 @@ class TB(object):
         self.log = logging.getLogger("cocotb.tb")
         self.log.setLevel(logging.DEBUG)        
 
-        tests_dir = os.path.abspath(os.path.dirname(__file__))
-        cocotb.fork(Clock(self.dut.clk_i, CLK_PERIOD_NS, units='ns').start())
+        cocotb.start_soon(Clock(self.dut.clk_i, CLK_PERIOD_NS, units='ns').start())
           
     async def cycle_reset(self):
         self.dut.reset_ni.value = 0
@@ -119,6 +118,10 @@ def test_parameter(N, START_VALUE, TAPS):
     parameters['START_VALUE'] = START_VALUE
     parameters['TAPS'] = TAPS
     
+    compile_args = []
+    if os.environ.get('SIM') == 'verilator':
+        compile_args = ['-Wno-fatal']
+
     sim_build="sim_build/" + "_".join(("{}={}".format(*i) for i in parameters.items()))
     cocotb_test.simulator.run(
         python_search=[tests_dir],
@@ -128,6 +131,7 @@ def test_parameter(N, START_VALUE, TAPS):
         module=module,
         parameters=parameters,
         sim_build=sim_build,
+        compile_args = compile_args,
         testcase="_test_parameter",
     )
 
@@ -152,7 +156,7 @@ def test_variable_config(N, VARIABLE_CONFIG):
     sim_build="sim_build/" + "_".join(("{}={}".format(*i) for i in parameters.items()))
     compile_args = []
     if os.environ.get('SIM') == 'verilator':
-        compile_args = ['-Wno-fatal']
+        compile_args = ['-Wno-fatal', '--no-timing']
     cocotb_test.simulator.run(
         python_search=[tests_dir],
         verilog_sources=verilog_sources,
@@ -171,7 +175,7 @@ if __name__ == '__main__':
     START_VALUE = np.array([1, 1, 1, 0, 1, 1, 0]) # bits here are in reversed order!
     ncellid = 0
     START_VALUE = np.roll(START_VALUE, -43 * ncellid)
-    # os.environ['SIM'] = 'verilator'
+    os.environ['SIM'] = 'verilator'
     test_parameter(N = 7, START_VALUE = int(''.join(map(str, START_VALUE)), 2), TAPS = 0x11)
 
     
